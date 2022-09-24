@@ -1,6 +1,5 @@
 package com.example.account.entity;
 
-import com.example.account.type.AccountStatus;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -11,28 +10,19 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)// 자동 시간 저장
-public class Account {
+@EntityListeners(AuditingEntityListener.class)
+public class AccountUser {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    private AccountUser accountUser;
-    private String accountNumber;
+    private String name;
 
-    @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus;
-    private Long balance;
-
-    private LocalDateTime registeredAt;
-    private LocalDateTime unRegisteredAt;
-
-    @CreatedDate// 자동 시간 저장
+    @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;

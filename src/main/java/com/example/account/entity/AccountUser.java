@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class AccountUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

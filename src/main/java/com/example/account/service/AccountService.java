@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor// @AutoWired대신 사용 생성자를 자동으로 만들어줌
@@ -62,5 +63,39 @@ public class AccountService {
     @Transactional
     public Account getAccount(Long id){
         return accountRepository.findById(id).get();
+    }
+
+    @Transactional
+    public AccountDto deleteAccount(Long userId, String accountNumber) {
+        // 오류처리
+        AccountUser accountUser = accountUserRepository.findById(userId)
+                .orElseThrow(() -> new AccountException(ErrorCode.USER_NOT_FOUND));
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountException(ErrorCode.ACCOUNT_NOT_FOUND));
+        validateDeleteAccount(accountUser, account);
+
+        // 계좌해지
+        account.setAccountStatus(AccountStatus.UNREGISTERED);
+        account.setUnRegisteredAt(LocalDateTime.now());
+
+        accountRepository.save(account);
+
+        return AccountDto.toDto(account);
+    }
+
+    private void validateDeleteAccount(AccountUser accountUser,
+                                       Account account){
+        // 해당 유저의 계좌가 아닌 경우
+        if(accountUser.getId() != account.getAccountUser().getId()){
+            throw new AccountException(ErrorCode.USER_ACCOUNT_UN_MATCH);
+        }
+        // 계좌가 이미 해지 상태
+        if(account.getAccountStatus() == AccountStatus.UNREGISTERED){
+            throw new AccountException(ErrorCode.ACCOUNT_ALREADY_UNREGISTERED);
+        }
+        // 잔액이 남아있음
+        if(account.getBalance() > 0){
+            throw new AccountException(ErrorCode.BALANCE_NOT_EMPTY);
+        }
     }
 }

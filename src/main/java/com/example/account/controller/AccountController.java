@@ -2,6 +2,7 @@ package com.example.account.controller;
 
 import com.example.account.dto.AccountDto;
 import com.example.account.dto.CreateAccount;
+import com.example.account.dto.DeleteAccount;
 import com.example.account.entity.Account;
 import com.example.account.service.AccountService;
 import com.example.account.service.RedisTestService;
@@ -30,6 +31,17 @@ public class AccountController {
         return CreateAccount.Response.toResponse(accountService.createAccount(
                 request.getUserId(),
                 request.getInitialBalance()
+        ));
+    }
+
+    @DeleteMapping("/account")
+    public DeleteAccount.Response deleteAccount(
+            @RequestBody @Valid DeleteAccount.Request request) {
+
+        // accountDto => Response
+        return DeleteAccount.Response.toResponse(accountService.deleteAccount(
+                request.getUserId(),
+                request.getAccountNumber()
         ));
     }
 

@@ -66,11 +66,6 @@ public class AccountService {
     }
 
     @Transactional
-    public Account getAccount(Long id){
-        return accountRepository.findById(id).get();
-    }
-
-    @Transactional
     public AccountDto deleteAccount(Long userId, String accountNumber) {
         // 오류처리
         AccountUser accountUser = accountUserRepository.findById(userId)

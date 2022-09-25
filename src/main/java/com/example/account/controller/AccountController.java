@@ -1,6 +1,7 @@
 package com.example.account.controller;
 
 import com.example.account.dto.AccountDto;
+import com.example.account.dto.AccountInfo;
 import com.example.account.dto.CreateAccount;
 import com.example.account.dto.DeleteAccount;
 import com.example.account.entity.Account;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,6 +26,9 @@ public class AccountController {
         return redisTestService.getLock();
     }
 
+    /**
+     * 계좌 생성
+     */
     @PostMapping("/account")
     public CreateAccount.Response createAccount(
             @RequestBody @Valid CreateAccount.Request request) {
@@ -34,6 +40,9 @@ public class AccountController {
         ));
     }
 
+    /**
+     * 계좌 삭제
+     */
     @DeleteMapping("/account")
     public DeleteAccount.Response deleteAccount(
             @RequestBody @Valid DeleteAccount.Request request) {
@@ -45,8 +54,15 @@ public class AccountController {
         ));
     }
 
-    @GetMapping("/account/{id}")
-    public Account getAccount(@PathVariable Long id){// 이름이 같으면 PathVariable 빼줘도댐
-        return accountService.getAccount(id);
+    /**
+     * 계좌 확인
+     */
+    @GetMapping("/account")
+    public List<AccountInfo> getAccountsByUserId(
+            @RequestParam("user_id") Long userId){
+
+        return accountService.getAccountsByUserId(userId).stream()
+                .map(accountDto -> AccountInfo.toInfo(accountDto))
+                .collect(Collectors.toList());// info 로바꾸고 다시 List로 변환
     }
 }
